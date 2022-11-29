@@ -5,8 +5,20 @@ let addBtn = document.querySelector("#add");
 let entry = document.querySelector("#item");
 let itemsList = document.querySelector(".items");
 
-// todo list object
-let todos = ["Buy groceries", "Wash dog"];
+// todo array
+let todos = [];
+
+// populating local storage
+function populateStorage() {
+  localStorage.setItem("list", JSON.stringify(todos));
+}
+
+let storedItems = JSON.parse(localStorage.getItem("list"));
+
+// if localStorage is not empty, push the items to the todos array
+if (storedItems) {
+  todos.push(...storedItems);
+}
 
 // display todo list items
 function render() {
@@ -30,6 +42,7 @@ addBtn.addEventListener("click", function (e) {
   e.preventDefault();
   if (entry.value) {
     todos.push(entry.value);
+    populateStorage();
   } else {
     alert("Cannot be empty!");
   }
@@ -48,7 +61,7 @@ itemsList.addEventListener("click", function (e) {
   let item__title = currentItem.querySelector(".item__title");
   let item__value = currentItem.querySelector(".item__input");
 
-  // if edit button was clicked
+  // if button was clicked, check which one
   if (clickedBtn) {
     if (clickedBtn.classList.contains("edit")) {
       // edit item
@@ -58,8 +71,12 @@ itemsList.addEventListener("click", function (e) {
       item__value.addEventListener("keypress", function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
+
+          // TODO: check if modified title already exists in the todos array
+
           // replace item in array
           todos.splice(item__index, 1, item__value.value);
+          populateStorage();
           item__title.classList.remove("d-none");
           item__value.classList.add("d-none");
 
@@ -72,6 +89,7 @@ itemsList.addEventListener("click", function (e) {
     // delete item
     else if (clickedBtn.classList.contains("delete")) {
       todos.splice(item__index, 1);
+      populateStorage();
       clearAll();
       render();
     }
