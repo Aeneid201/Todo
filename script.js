@@ -6,7 +6,14 @@ let entry = document.querySelector("#item");
 let itemsList = document.querySelector(".items");
 
 // todo array
-let todos = [];
+let todos = [
+  {
+    title: "wash dishes",
+    description: "need to wash dishes tonight",
+    dueDate: "2022-11-29",
+    priority: "medium",
+  },
+];
 
 // populating local storage
 function populateStorage() {
@@ -20,13 +27,19 @@ if (storedItems) {
   todos.push(...storedItems);
 }
 
-// display todo list items
+// display todo items
 function render() {
-  todos.forEach((element, i) => {
+  todos.forEach((item, i) => {
     let html = `<div class="item" data-item="${i}">
-    <p class="item__title">${element}</p>
-    <input class="item__input d-none" autocomplete="off" value="${element}">
-    <div class="btns">
+    <div>
+    <p class="item__title">${item.title}</p>
+    <input class="item__input d-none" autocomplete="off" value="${item.title}">
+    </div>
+
+    <div class="item__date">
+    ${item.dueDate}
+    </div>
+    <div class="item__buttons">
       <button class="edit"><i class="fa fa-pen"></i></button>
       <button class="delete"><i class="fa fa-trash"></i></button>
     </div>
@@ -41,10 +54,13 @@ render();
 addBtn.addEventListener("click", function (e) {
   e.preventDefault();
   if (entry.value) {
-    todos.push(entry.value);
-    populateStorage();
+    // create new object then push it to the array
+    let new_item = new Object();
+    new_item.title = entry.value;
+    todos.push(new_item);
+    // populateStorage();
   } else {
-    alert("Cannot be empty!");
+    alert("Field cannot be empty! Please try again.");
   }
 
   // clear and render
@@ -72,11 +88,11 @@ itemsList.addEventListener("click", function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
 
-          // TODO: check if modified title already exists in the todos array
+          // TODO: check if edited title already exists
 
-          // replace item in array
-          todos.splice(item__index, 1, item__value.value);
-          populateStorage();
+          // update item title
+          todos[item__index].title = item__value.value;
+          // populateStorage();
           item__title.classList.remove("d-none");
           item__value.classList.add("d-none");
 
@@ -89,7 +105,7 @@ itemsList.addEventListener("click", function (e) {
     // delete item
     else if (clickedBtn.classList.contains("delete")) {
       todos.splice(item__index, 1);
-      populateStorage();
+      // populateStorage();
       clearAll();
       render();
     }
